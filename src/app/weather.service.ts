@@ -25,7 +25,11 @@ export class WeatherService implements OnDestroy {
       timer(0, 30000).pipe(
         takeUntil(this.subControl),
         switchMap(() => this.getConditions(zipcode)),
-        map(res => ({zip: zipcode, data: res})),
+        map(res => {
+          if (!res.error) {
+            return {zip: zipcode, data: res};
+          }
+        }),
         share()
       )
     );
