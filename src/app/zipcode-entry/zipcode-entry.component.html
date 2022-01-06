@@ -1,8 +1,18 @@
 <div class="well">
   <h2>Enter a zipcode:</h2>
-  <input type="text" #zipcode placeholder="Zipcode" class="form-control">
+  <input type="text" #zipcode placeholder="Zipcode" class="form-control"
+         (change)="handleZipcodeChange(zipcode.value)">
   <br>
-  <button class="btn btn-primary" (click)="addLocation(zipcode.value)" >
-    Add location
-  </button>
+  <app-load-button
+          [normalState]="'Add location'"
+          [loadState]="'Adding...'"
+          [loadStateClass]="'btn-primary'"
+          [doneState]="btnDoneState"
+          [actionObservable]="actionObservable"
+          (completed)="addLocation($event, zipcode.value)">
+  </app-load-button>
 </div>
+
+<ng-template #btnDoneState>
+  Done
+</ng-template>

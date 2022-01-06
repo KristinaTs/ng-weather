@@ -1,0 +1,8 @@
+<button class="btn" [class]="btnClass" (click)="handleBtnClick()" [disabled]="isLoading">
+    <ng-container *ngIf="isStateTemplate(); else stringTemplate">
+        <span appEmbedView [viewToRender]="currentBtnState"></span>
+    </ng-container>
+    <ng-template #stringTemplate>
+        {{currentBtnState}}
+    </ng-template>
+</button>
