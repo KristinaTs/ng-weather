@@ -1,8 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject, timer } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, throwError, timer } from 'rxjs';
 
 import { HttpClient } from '@angular/common/http';
-import { catchError, map, share, switchMap, takeUntil } from 'rxjs/operators';
+import { map, retry, share, switchMap, takeUntil } from 'rxjs/operators';
 
 @Injectable()
 export class WeatherService implements OnDestroy {
@@ -25,6 +25,9 @@ export class WeatherService implements OnDestroy {
       timer(0, 30000).pipe(
         takeUntil(this.subControl),
         switchMap(() => this.getConditions(zipcode)),
+        // Retry if for some reason the request was not successful
+        // I placed a limit of 2 tries as the API is limited in number of requests we can make
+        retry(2),
         map(res => {
           if (!res.error) {
             return {zip: zipcode, data: res};
@@ -38,10 +41,7 @@ export class WeatherService implements OnDestroy {
   }
 
   getConditions(zipcode: string): Observable<any> {
-    return this.http.get(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
-      .pipe(
-        catchError((err) => of(err))
-      );
+    return this.http.get(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`);
   }
 
   removeCurrentConditions(zipcode: string): void {

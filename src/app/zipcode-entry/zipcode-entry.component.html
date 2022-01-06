@@ -1,9 +1,28 @@
 <div class="well">
   <h2>Enter a zipcode:</h2>
-  <input type="text" #zipcode placeholder="Zipcode" class="form-control">
+  <input type="text" #zipcode placeholder="Zipcode" class="form-control"
+         (change)="handleZipcodeChange(zipcode.value)">
   <br>
-  <button class="btn btn-primary" (click)="addLocation(zipcode.value)" >
+  <button class="btn btn-primary" (click)="addLocation({hasError: false}, zipcode.value)" >
     Add location
   </button>
-  <app-load-button [actionObservable]="addConditions(zipcode.value)" (completed)="addLocation(zipcode.value)"></app-load-button>
+  <app-load-button
+          [normalState]="btnNormalState"
+          [loadState]="'Adding'"
+          [doneState]="'Done'"
+          [actionObservable]="actionObservable"
+          (completed)="addLocation($event, zipcode.value)">
+  </app-load-button>
 </div>
+
+<ng-template #btnNormalState>
+  Add location
+</ng-template>
+
+<ng-template #btnLoadState>
+  Adding...
+</ng-template>
+
+<ng-template #btnDoneState>
+  Done
+</ng-template>

@@ -15,6 +15,8 @@ import {HttpClientModule} from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { LoadButtonComponent } from './load-button/load-button.component';
+import { EmbedViewDirective } from './embed-view-directive/embed-view.directive';
+
 
 @NgModule({
   declarations: [
@@ -23,7 +25,8 @@ import { LoadButtonComponent } from './load-button/load-button.component';
     ForecastsListComponent,
     CurrentConditionsComponent,
     MainPageComponent,
-    LoadButtonComponent
+    LoadButtonComponent,
+    EmbedViewDirective
   ],
   imports: [
     BrowserModule,
