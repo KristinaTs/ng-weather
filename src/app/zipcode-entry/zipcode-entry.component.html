@@ -7,22 +7,16 @@
     Add location
   </button>
   <app-load-button
-          [normalState]="btnNormalState"
-          [loadState]="'Adding'"
-          [doneState]="'Done'"
+          [normalState]="'Add location'"
+          [loadState]="'Adding...'"
+          [loadStateClass]="'btn-primary'"
+          [doneState]="btnDoneState"
           [actionObservable]="actionObservable"
           (completed)="addLocation($event, zipcode.value)">
   </app-load-button>
 </div>
 
-<ng-template #btnNormalState>
-  Add location
-</ng-template>
-
-<ng-template #btnLoadState>
-  Adding...
-</ng-template>
-
 <ng-template #btnDoneState>
+  <i class="fa fa-home"></i>
   Done
 </ng-template>

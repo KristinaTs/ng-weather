@@ -4,9 +4,7 @@ import {
   Input,
   OnInit,
   Output,
-  TemplateRef,
-  ViewChild,
-  ViewContainerRef
+  TemplateRef
 } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -15,8 +13,7 @@ import { Observable } from 'rxjs';
   templateUrl: './load-button.component.html'
 })
 export class LoadButtonComponent implements OnInit {
-  @ViewChild('loadBtn', {read: ViewContainerRef}) viewContainerRef: ViewContainerRef;
-
+  isLoading = false;
   // Inputs to change button class depending on state
   @Input() normalStateClass = 'btn-primary';
   @Input() loadStateClass = 'btn-warning';
@@ -42,6 +39,7 @@ export class LoadButtonComponent implements OnInit {
   handleBtnClick(): void {
     if (this.actionObservable) {
      this.setState(this.loadState, this.loadStateClass);
+     this.isLoading = true;
       this.actionObservable.subscribe(() => {
         this.setState(this.doneState, this.doneStateClass);
         // If the req was successful emit has error false and display the done state of the button
@@ -64,6 +62,8 @@ export class LoadButtonComponent implements OnInit {
   private updateToNormalState(): void {
     setTimeout(() => {
       this.setState(this.normalState, this.normalStateClass);
+      // change to loading false only after we are back in normal state
+      this.isLoading = false;
     }, 3000);
   }
 
