@@ -1,18 +1,31 @@
 <div class="well">
   <h2>Enter a zipcode:</h2>
-  <input type="text" #zipcode placeholder="Zipcode" class="form-control"
-         (change)="handleZipcodeChange(zipcode.value)">
-  <br>
+  <form [formGroup]="form">
+    <input type="text"
+           placeholder="Zipcode"
+           class="form-control"
+           formControlName="zipcode">
+    <br>
+    <app-autocomplete-select
+            formControlName="countryCode"
+            [listData]="countries"
+            [displayKey]="'name'"
+            [valueKey]="'code'"
+    ></app-autocomplete-select>
+  </form>
+
   <app-load-button
           [normalState]="'Add location'"
-          [loadState]="'Adding...'"
           [loadStateClass]="'btn-primary'"
+          [loadState]="'Adding...'"
           [doneState]="btnDoneState"
-          [actionObservable]="actionObservable"
-          (completed)="addLocation($event, zipcode.value)">
+          [errorState]="'Error'"
+          [actionObservable]="addConditions.bind(this)"
+          (completed)="addLocation($event)">
   </app-load-button>
 </div>
 
 <ng-template #btnDoneState>
   Done
 </ng-template>
+

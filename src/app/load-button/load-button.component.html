@@ -1,8 +1,12 @@
 <button class="btn" [class]="btnClass" (click)="handleBtnClick()" [disabled]="isLoading">
     <ng-container *ngIf="isStateTemplate(); else stringTemplate">
-        <span appEmbedView [viewToRender]="currentBtnState"></span>
+        <ng-container *ngTemplateOutlet="currentBtnState"></ng-container>
     </ng-container>
     <ng-template #stringTemplate>
         {{currentBtnState}}
     </ng-template>
 </button>
+
+<ng-template #loadTemplate>
+    <img class="spinner" src="./assets/icons/spinner.gif" alt="">
+</ng-template>

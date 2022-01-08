@@ -1,0 +1,31 @@
+<div>
+    <div (click)="open()">
+            <div class="form-control" [class.hidden]="isOpen">{{ label }}</div>
+            <input #search
+                   inputAutoFocus
+                   [class.hidden]="!isOpen"
+                   type="text"
+                   class="form-control"
+                   [ngModel]="selectedValue?.name"
+                   (input)="handleSearchChange(search.value)"
+            >
+    </div>
+    <ng-container *ngIf="isOpen">
+        <div class="select-menu">
+
+            <ul class="dropdown-container" *ngIf="!options.length">
+                <li>No results found...</li>
+            </ul>
+
+            <ul *ngIf="options.length" class="dropdown-container">
+                <li class="search-item"
+                    *ngFor="let option of options"
+                    (click)="select(option)"
+                    [innerHTML]="option.name | highlight: search.value">
+                </li>
+            </ul>
+
+        </div>
+    </ng-container>
+</div>
+

@@ -1,0 +1,22 @@
+.dropdown-container {
+  height: 100px;
+  overflow: scroll;
+  padding: 0;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  list-style: none;
+
+  .search-item {
+    cursor: pointer;
+    height: 25px;
+    padding: 5px;
+  }
+
+  .search-item:hover {
+    background-color: lightgray;
+  }
+
+  .hidden {
+    visibility: hidden;
+  }
+}
