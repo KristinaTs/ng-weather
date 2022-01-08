@@ -28,7 +28,7 @@ export class LoadButtonComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Inputs to change button content
   @Input() normalState: string | TemplateRef<any> = 'Save';
-  @Input() loadState: string | TemplateRef<any> = 'Loading...';
+  @Input() loadState: string | TemplateRef<any>;
   @Input() doneState: string | TemplateRef<any> = 'Done!';
   @Input() errorState: string | TemplateRef<any> = 'Error';
   @Input() actionObservable: () => Observable<any>;
@@ -40,19 +40,34 @@ export class LoadButtonComponent implements OnInit, AfterViewInit, OnDestroy {
 
   subControl = new Subject();
 
+  /**
+   * Set the initial button state
+   */
   ngOnInit(): void {
     this.setState(this.normalState, this.normalStateClass);
     this.btnClass = this.normalStateClass;
   }
 
+  /**
+   * Sets the default loading state of the button to the template
+   */
   ngAfterViewInit() {
-    this.loadState = this.loadTemp;
+    if (!this.loadState) {
+      this.loadState = this.loadTemp;
+    }
   }
 
+  /**
+   * Handle the button click
+   * Execute the associated observable with the button
+   * and change the states depending on the state of the observable
+   *
+   * After complete with SUCCESS or ERROR emit complete with hasError property
+   */
   handleBtnClick(): void {
     if (this.actionObservable) {
-     this.setState(this.loadState, this.loadStateClass);
-     this.isLoading = true;
+      this.setState(this.loadState, this.loadStateClass);
+      this.isLoading = true;
       this.actionObservable().pipe(
         takeUntil(this.subControl)
       ).subscribe(() => {
@@ -69,11 +84,21 @@ export class LoadButtonComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /**
+   * Set the state of the button
+   * @param state
+   * @param btnClass
+   * @private
+   */
   private setState(state: string | TemplateRef<any>, btnClass: string): void {
-   this.currentBtnState = state;
-   this.btnClass = btnClass;
+    this.currentBtnState = state;
+    this.btnClass = btnClass;
   }
 
+  /**
+   * Update the state of the button to the initial state
+   * @private
+   */
   private updateToNormalState(): void {
     setTimeout(() => {
       this.setState(this.normalState, this.normalStateClass);
@@ -82,14 +107,18 @@ export class LoadButtonComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 2000);
   }
 
+  /**
+   * Check if the state of the button is
+   * a templateRef to know how to render it
+   */
   isStateTemplate(): boolean {
     return this.currentBtnState instanceof TemplateRef;
   }
 
-  isStateLoading(): boolean {
-    return this.btnClass === this.loadStateClass;
-  }
-
+  /**
+   * Make sure we unsubscribe from the provided observable
+   * If the Observable is a custom one we must unsubscribe from it
+   */
   ngOnDestroy(): void {
     this.subControl.next();
   }

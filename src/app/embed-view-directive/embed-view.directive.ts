@@ -5,6 +5,9 @@ import {
   ViewContainerRef
 } from '@angular/core';
 
+/**
+ * Not used
+ */
 @Directive({selector: '[appEmbedView]'})
 export class EmbedViewDirective {
   @Input() set viewToRender(value: TemplateRef<any>) {

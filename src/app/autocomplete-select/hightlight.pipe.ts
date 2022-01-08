@@ -12,7 +12,7 @@ export class HighlightPipe implements PipeTransform {
     if (!args) {
       return value;
     }
-    // Match the string we want to hightlight
+    // Match the string we want to highlight, gi is used for case insensitive search
     const re = new RegExp(args, 'gi');
     const match = value.match(re);
 
