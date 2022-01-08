@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject, throwError, timer } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, timer } from 'rxjs';
 
 import { HttpClient } from '@angular/common/http';
 import { map, retry, share, switchMap, takeUntil } from 'rxjs/operators';
@@ -17,14 +17,14 @@ export class WeatherService implements OnDestroy {
   constructor(private http: HttpClient) {
   }
 
-  addCurrentConditions(zipcode: string): void {
+  addCurrentConditions(zipcode: string, countryCode?: string): void {
     // Here we make a request to get the current conditions data from the API.
     // Note the use of backticks and an expression to insert the zipcode
     this.currentConditions.set(
       zipcode,
       timer(0, 30000).pipe(
         takeUntil(this.subControl),
-        switchMap(() => this.getConditions(zipcode)),
+        switchMap(() => this.getConditions(zipcode, countryCode)),
         // Retry if for some reason the request was not successful
         // I placed a limit of 2 tries as the API is limited in number of requests we can make
         retry(2),
@@ -40,8 +40,8 @@ export class WeatherService implements OnDestroy {
     this.currentConditionsSubject.next(this.currentConditions);
   }
 
-  getConditions(zipcode: string): Observable<any> {
-    return this.http.get(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`);
+  getConditions(zipcode: string, countryCode: string = 'us'): Observable<any> {
+    return this.http.get(`${WeatherService.URL}/weather?zip=${zipcode},${countryCode}&units=imperial&APPID=${WeatherService.APPID}`);
   }
 
   removeCurrentConditions(zipcode: string): void {

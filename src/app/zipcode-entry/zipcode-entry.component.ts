@@ -1,37 +1,60 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { LocationService } from '../location.service';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { WeatherService } from '../weather.service';
+import { countries } from '../counties';
+import { FormControl, FormGroup } from '@angular/forms';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-zipcode-entry',
   templateUrl: './zipcode-entry.component.html'
 })
-export class ZipcodeEntryComponent {
+export class ZipcodeEntryComponent implements OnDestroy {
   actionObservable: Observable<any>;
+  countries = countries;
 
-  constructor(private service: LocationService, private weatherService: WeatherService) { }
+  form = new FormGroup({
+    zipcode: new FormControl(''),
+    countryCode: new FormControl('')
+  });
+  private subControl = new Subject();
 
-  addLocation(event: {hasError: boolean}, zipcode: string): void {
+  constructor(
+    private service: LocationService,
+    private weatherService: WeatherService) {
+    this.listenForFormChanges();
+  }
+
+  addLocation(event: { hasError: boolean }): void {
     if (!event.hasError) {
-      this.service.addLocation(zipcode);
+      const {zipcode, countryCode} = this.form.value;
+      this.service.addLocation(zipcode, countryCode);
+      this.form.reset();
     } else {
-     // Display error message
+      // Display error message
     }
   }
 
-  addConditions(zipcode: string): Observable<any> {
+  addConditions(zipcode: string, code: string): Observable<any> {
     /* Return observable to try and get the new locations conditions
      if the status is OK we call the method addLocations
      which will add our location to the array of locations with a polling mechanism */
-      return this.weatherService.getConditions(zipcode);
+    return this.weatherService.getConditions(zipcode, code);
   }
 
-  /**
-   * Added change method to call the addCondition method only on input change and not on every check
-   * @param zipcode
-   */
-  handleZipcodeChange(zipcode: string) {
-    this.actionObservable = this.addConditions(zipcode);
+  private listenForFormChanges(): void {
+    this.form.valueChanges.pipe(
+      takeUntil(this.subControl)
+    ).subscribe(value => {
+      const {zipcode, countryCode} = value;
+      if (zipcode && countryCode) {
+        this.actionObservable = this.addConditions(zipcode, countryCode);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.subControl.next();
   }
 }

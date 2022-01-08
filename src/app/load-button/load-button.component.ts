@@ -64,7 +64,7 @@ export class LoadButtonComponent implements OnInit {
       this.setState(this.normalState, this.normalStateClass);
       // change to loading false only after we are back in normal state
       this.isLoading = false;
-    }, 3000);
+    }, 2000);
   }
 
   isStateTemplate(): boolean {

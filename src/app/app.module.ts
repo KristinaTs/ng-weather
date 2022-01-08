@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { ZipcodeEntryComponent } from './zipcode-entry/zipcode-entry.component';
@@ -16,6 +16,9 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { LoadButtonComponent } from './load-button/load-button.component';
 import { EmbedViewDirective } from './embed-view-directive/embed-view.directive';
+import { AutocompleteSelectComponent } from './autocomplete-select/autocomplete-select.component';
+import { HighlightPipe } from './autocomplete-select/hightlight.pipe';
+import { InputFocusDirective } from './autocomplete-select/input-focus.directive';
 
 
 @NgModule({
@@ -26,13 +29,17 @@ import { EmbedViewDirective } from './embed-view-directive/embed-view.directive'
     CurrentConditionsComponent,
     MainPageComponent,
     LoadButtonComponent,
-    EmbedViewDirective
+    EmbedViewDirective,
+    AutocompleteSelectComponent,
+    HighlightPipe,
+    InputFocusDirective
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpClientModule,
     RouterModule,
+    ReactiveFormsModule,
     routing,
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
