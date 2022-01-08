@@ -1,29 +1,25 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { LocationService } from '../location.service';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { WeatherService } from '../weather.service';
 import { countries } from '../counties';
 import { FormControl, FormGroup } from '@angular/forms';
-import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-zipcode-entry',
   templateUrl: './zipcode-entry.component.html'
 })
-export class ZipcodeEntryComponent implements OnDestroy {
-  actionObservable: Observable<any>;
+export class ZipcodeEntryComponent {
   countries = countries;
 
   form = new FormGroup({
     zipcode: new FormControl(''),
     countryCode: new FormControl('')
   });
-  private subControl = new Subject();
 
   constructor(
     private service: LocationService,
     private weatherService: WeatherService) {
-    this.listenForFormChanges();
   }
 
   addLocation(event: { hasError: boolean }): void {
@@ -32,29 +28,15 @@ export class ZipcodeEntryComponent implements OnDestroy {
       this.service.addLocation(zipcode, countryCode);
       this.form.reset();
     } else {
-      // Display error message
+      // Display error message if we want
     }
   }
 
-  addConditions(zipcode: string, code: string): Observable<any> {
+  addConditions(): Observable<any> {
     /* Return observable to try and get the new locations conditions
      if the status is OK we call the method addLocations
      which will add our location to the array of locations with a polling mechanism */
-    return this.weatherService.getConditions(zipcode, code);
-  }
-
-  private listenForFormChanges(): void {
-    this.form.valueChanges.pipe(
-      takeUntil(this.subControl)
-    ).subscribe(value => {
-      const {zipcode, countryCode} = value;
-      if (zipcode && countryCode) {
-        this.actionObservable = this.addConditions(zipcode, countryCode);
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    this.subControl.next();
+    const {zipcode, countryCode} = this.form.value;
+    return this.weatherService.getConditions(zipcode, countryCode);
   }
 }

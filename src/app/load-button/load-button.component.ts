@@ -1,19 +1,25 @@
 import {
+  AfterViewInit,
   Component,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
-  TemplateRef
+  TemplateRef,
+  ViewChild
 } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-load-button',
-  templateUrl: './load-button.component.html'
+  templateUrl: './load-button.component.html',
+  styleUrls: ['load-button.component.scss']
 })
-export class LoadButtonComponent implements OnInit {
-  isLoading = false;
+export class LoadButtonComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('loadTemplate') loadTemp: TemplateRef<any>;
+
   // Inputs to change button class depending on state
   @Input() normalStateClass = 'btn-primary';
   @Input() loadStateClass = 'btn-warning';
@@ -25,22 +31,31 @@ export class LoadButtonComponent implements OnInit {
   @Input() loadState: string | TemplateRef<any> = 'Loading...';
   @Input() doneState: string | TemplateRef<any> = 'Done!';
   @Input() errorState: string | TemplateRef<any> = 'Error';
-  @Input() actionObservable: Observable<any>;
+  @Input() actionObservable: () => Observable<any>;
 
   @Output() completed = new EventEmitter<{ hasError: boolean }>();
   currentBtnState: string | TemplateRef<any>;
   btnClass = '';
+  isLoading = false;
+
+  subControl = new Subject();
 
   ngOnInit(): void {
     this.setState(this.normalState, this.normalStateClass);
     this.btnClass = this.normalStateClass;
   }
 
+  ngAfterViewInit() {
+    this.loadState = this.loadTemp;
+  }
+
   handleBtnClick(): void {
     if (this.actionObservable) {
      this.setState(this.loadState, this.loadStateClass);
      this.isLoading = true;
-      this.actionObservable.subscribe(() => {
+      this.actionObservable().pipe(
+        takeUntil(this.subControl)
+      ).subscribe(() => {
         this.setState(this.doneState, this.doneStateClass);
         // If the req was successful emit has error false and display the done state of the button
         this.completed.emit({hasError: false});
@@ -73,5 +88,9 @@ export class LoadButtonComponent implements OnInit {
 
   isStateLoading(): boolean {
     return this.btnClass === this.loadStateClass;
+  }
+
+  ngOnDestroy(): void {
+    this.subControl.next();
   }
 }

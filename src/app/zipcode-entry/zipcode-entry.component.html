@@ -16,10 +16,11 @@
 
   <app-load-button
           [normalState]="'Add location'"
-          [loadState]="'Adding...'"
           [loadStateClass]="'btn-primary'"
+          [loadState]="'Adding...'"
           [doneState]="btnDoneState"
-          [actionObservable]="actionObservable"
+          [errorState]="'Error'"
+          [actionObservable]="addConditions.bind(this)"
           (completed)="addLocation($event)">
   </app-load-button>
 </div>
@@ -27,3 +28,4 @@
 <ng-template #btnDoneState>
   Done
 </ng-template>
+
